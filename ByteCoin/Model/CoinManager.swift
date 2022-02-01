@@ -23,10 +23,31 @@ struct CoinManager {
             let session = URLSession(configuration: .default)
             let task = session.dataTask(with: url ) { (data, response, error) in
                 if error != nil {
-                    print(error)
+                    print(error!)
+                    return
                 }
+            let dataAsString = String(data: data!, encoding: .utf8)
+            parseJSON(data!)
+            }
+            task.resume()
+        }
+    }
+    
+    func parseJSON(_ byteCoinData: Data) -> ByteCoinModel? {
+            
+            let decoder = JSONDecoder()
+            do {
+                let decodedData = try decoder.decode(ByteCoinData.self, from: byteCoinData)
+                let price = decodedData.rate
+                let currencyCode = decodedData.asset_id_quote
+                let byteCoin = ByteCoinModel(price: price, currencyCode: currencyCode)
+                print(price)
+                return byteCoin
+            } catch {
+//                delegate?.didFailWithError(error: error)
+                return nil
             }
             
         }
-    }
+    
 }
